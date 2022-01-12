@@ -64,7 +64,7 @@ def durations_by_description_key(n):
     durations_hrs = project_records.Duration.dt.seconds // 3600
     total_duration = project_records.Duration.sum()
     duration_fraction = (project_records.Duration / total_duration).rename('Duration (%)')
-    desc_keys = project_records.Description.apply(lambda s: s[0:n]).rename('Key')
+    desc_keys = project_records.Description.apply(lambda s: str(s)[0:n]).rename('Key')
     durations = pd.concat([desc_keys, durations_hrs, duration_fraction],
                           axis=1)
     duration_by_key = durations.groupby('Key').sum()
