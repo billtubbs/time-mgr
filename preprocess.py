@@ -19,7 +19,7 @@ def datetime_input_from_user(message="Date: ", default=None):
 
 
 data_dir = 'data'
-filename = "Toggl_time_entries_2020-08-31_to_2020-10-18.csv"
+filename = "Toggl_time_entries_2021-01-01_to_2021-12-31.csv"
 df = pd.read_csv(os.path.join(data_dir, filename))
 
 df.Duration = pd.to_timedelta(df.Duration)
@@ -58,10 +58,14 @@ project_records = df.loc[selection & (df.Project == project)]
 
 
 def durations_by_description_key(n):
+    """Return total duration by key, where key is the first
+    n characters of each time entry.
+    """
+    durations_hrs = project_records.Duration.dt.seconds // 3600
     total_duration = project_records.Duration.sum()
     duration_fraction = (project_records.Duration / total_duration).rename('Duration (%)')
     desc_keys = project_records.Description.apply(lambda s: s[0:n]).rename('Key')
-    durations = pd.concat([desc_keys, project_records.Duration, duration_fraction],
+    durations = pd.concat([desc_keys, durations_hrs, duration_fraction],
                           axis=1)
     duration_by_key = durations.groupby('Key').sum()
     return duration_by_key.sort_values(by='Duration (%)', ascending=False)
